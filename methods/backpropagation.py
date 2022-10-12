@@ -26,6 +26,6 @@ def backpropagation(
         )
 
     for layer in range(1, num_of_layers):
-        gradient[layer] += np.dot(activated_neurons[layer], error[layer])
+        gradient[layer] += np.dot(error[layer], activated_neurons[layer - 1].T)
 
     return gradient, error

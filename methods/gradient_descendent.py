@@ -6,6 +6,7 @@ import numpy as np
 from methods.backpropagation import backpropagation
 from methods.feedforward import feedforward
 from methods.numerical_gradient import numerical_gradient
+from utils import cost
 
 
 def gradient_descendent(
@@ -16,7 +17,7 @@ def gradient_descendent(
     learning_rate: float,
     num_of_iterations: int,
     calc_numeric: bool = False,
-) -> Tuple[List[np.ndarray], List[np.ndarray], List[np.ndarray], List[np.ndarray]]:
+) -> Tuple[List[np.ndarray], List[np.ndarray], List[np.ndarray], List[np.ndarray], List[float]]:
 
     theta: List[np.ndarray] = deepcopy(initial_theta)
     theta0: List[np.ndarray] = deepcopy(initial_theta0)
@@ -27,13 +28,14 @@ def gradient_descendent(
     num_of_examples = len(input_data)
 
     for i in range(num_of_iterations):
-        if i % int(num_of_iterations/10) == 0:
-            print(100*"\n")
+        if i % int(num_of_iterations / 10) == 0:
+            print(100 * "\n")
             print(f"Progress: {i}/{num_of_iterations}")
 
         gradient, error = get_gradient_shaped_array(theta, theta0)
         numeric_gradient, numeric_error = get_gradient_shaped_array(theta, theta0)
 
+        total_cost = 0
         for input_row, expected_output_row in zip(input_data, expected_output):
             activated_neurons, neurons = feedforward(theta, theta0, input_row)
 
@@ -42,26 +44,23 @@ def gradient_descendent(
             )
             if calc_numeric:
                 numeric_gradient_row, numeric_error_row = numerical_gradient(
-                    theta, theta0, input_row, expected_output_row
+                    numeric_theta, numeric_theta0, input_row, expected_output_row
                 )
 
             for layer in range(1, num_of_layers):
-                gradient[layer] += gradient_row[layer] / num_of_examples
-                error[layer] += error_row[layer] / num_of_examples
+                gradient[layer] -= gradient_row[layer] / num_of_examples
+                error[layer] -= error_row[layer] / num_of_examples
 
                 if calc_numeric:
                     numeric_gradient[layer] -= (
                         numeric_gradient_row[layer] / num_of_examples
                     )
                     error[layer] -= numeric_error_row[layer] / num_of_examples
+            
+            iteration_cost = 0
+
 
         for layer in range(1, num_of_layers):
-            if i % int(num_of_iterations/10) == 0:
-                print(f"gradient[{layer}]: {gradient[layer]}")
-                print(f"error[{layer}]: {error[layer]}")
-                print(f"numeric_gradient[{layer}]: {numeric_gradient[layer]}")
-                print(f"numeric_error[{layer}]: {numeric_error[layer]}")
-
             theta[layer] += learning_rate * gradient[layer]
             theta0[layer] += learning_rate * error[layer]
             numeric_theta[layer] += learning_rate * numeric_gradient[layer]

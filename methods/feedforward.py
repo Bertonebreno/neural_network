@@ -10,8 +10,8 @@ def feedforward(
 ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
     num_of_layers = len(theta)
 
-    activated_neurons = [np.array([])] * num_of_layers
-    neurons = [np.array([])] * num_of_layers
+    activated_neurons: List[np.ndarray] = [np.array([])] * num_of_layers
+    neurons: List[np.ndarray] = [np.array([])] * num_of_layers
 
     activated_neurons[0] = input
     for layer in range(1, num_of_layers):
@@ -23,7 +23,7 @@ def feedforward(
     return activated_neurons, neurons
 
 
-def generate_test_problem(num_of_examples: int) -> Tuple[np.ndarray, np.ndarray]:
+def generate_test_problem(num_of_examples: int) -> Tuple[List, List]:
     input = np.array([np.random.random((2, 1)) for i in range(num_of_examples)])
     expected_output = np.array([1 if row[0] > row[1] else 0 for row in input])
 
@@ -38,10 +38,10 @@ def check_test_problem(
     for i in range(number_of_tries):
         input, expected_output = generate_test_problem(1)
 
-        activated_neurons, _ = feedforward(theta, theta0, input)
+        activated_neurons, _ = feedforward(theta, theta0, input[0])
 
-        answer = True if activated_neurons[-1] > 0.5 else False
-        if answer == expected_output:
+        answer = 1 if activated_neurons[-1] > 0.5 else 0
+        if answer == expected_output[0]:
             trues += 1
         else:
             falses += 1
