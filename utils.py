@@ -1,4 +1,5 @@
 import random
+from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
 import matplotlib.pyplot as plt
@@ -127,3 +128,14 @@ def generate_test_problem(num_of_examples: int) -> Tuple[List, List]:
     expected_output = [1 if row[0] > row[1] else 0 for row in input]
 
     return input, expected_output
+
+
+@dataclass
+class NeuralNetwork:
+    num_of_neurons: List[int]
+    regularization_constant: float
+    theta: List[np.ndarray]
+    theta0: List[np.ndarray]
+    performance: float
+    training_time: float
+    mean_time_in_feedforward: float
