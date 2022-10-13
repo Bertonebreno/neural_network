@@ -35,21 +35,18 @@ def cost(output: np.ndarray, expected_output: np.ndarray) -> float:
     return np.sum((output - expected_output) ** 2 / 2)
 
 
-def plot_theta(theta: List[np.ndarray]) -> None:
-    fig, axis = plt.subplots(4, 8, figsize=(8, 8))
+def plot_theta(theta: List[np.ndarray], num_rows: int, num_cols: int) -> None:
+    fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols, figsize=(num_cols*1.6, num_cols*0.9))
     image_number = 0
-    for i in range(4):
-        for j in range(8):
-            theta_Li = theta[1][image_number]
-            axis[i, j].imshow(
-                (theta_Li - np.min(theta_Li) / np.ptp(theta_Li)).reshape(
-                    20, 20, order="F"
-                ),
-                cmap="hot",
-            )
-            axis[i, j].axis("off")
-            image_number += 1
-    plt.show()
+    for ax in axes.flat:
+        theta_Li = theta[1][image_number]
+        im = ax.imshow(((theta_Li - np.min(theta_Li)) / np.ptp(theta_Li)).reshape((20, 20)), cmap="hot")
+        image_number += 1
+
+    fig.subplots_adjust(right=0.8)
+    cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+    fig.colorbar(im, cax=cbar_ax)
+    plt.savefig("thetas.png", dpi=300)
 
 
 def read_MNIST_data() -> Tuple[
