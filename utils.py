@@ -1,10 +1,13 @@
 import random
+import warnings
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+warnings.filterwarnings("ignore")
 
 
 def generate_theta(
