@@ -1,8 +1,9 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import random
 
 
 def generate_theta(
@@ -14,10 +15,10 @@ def generate_theta(
     theta0: List[np.ndarray] = [np.array([])] * num_of_layers  # Biases
 
     for layer in range(1, num_of_layers):
-        epi = (6**(1/2))/(num_of_neurons[layer] + num_of_neurons[layer - 1])**(1/2)
-
-        theta[layer] = np.random.rand(num_of_neurons[layer], num_of_neurons[layer - 1]) * epi
-        theta0[layer] = np.random.rand(num_of_neurons[layer], 1) * epi
+        theta[layer] = (
+            2 * np.random.rand(num_of_neurons[layer], num_of_neurons[layer - 1]) - 1
+        )
+        theta0[layer] = 2 * np.random.rand(num_of_neurons[layer], 1) - 1
 
     return theta, theta0
 
@@ -59,12 +60,20 @@ def read_MNIST_data() -> Tuple[
     List[np.ndarray],
     List[np.ndarray],
 ]:
-    images = pd.read_csv(
-        "data/imageMNIST.csv", delimiter="|", quotechar='"', header=None
-    ).values.tolist()
-    labels = pd.read_csv(
-        "data/labelMNIST.csv", delimiter=",", quotechar='"', header=None
-    ).values.tolist()
+    sorted_images = [
+        np.array(row).reshape((400, 1))
+        for row in pd.read_csv(
+            "data/imageMNIST.csv", delimiter="|", quotechar='"', header=None
+        ).values.tolist()
+    ]
+    sorted_labels = [
+        number_to_label_array(row[0])
+        for row in pd.read_csv(
+            "data/labelMNIST.csv", delimiter=",", quotechar='"', header=None
+        ).values.tolist()
+    ]
+
+    images, labels = shuffle_lists(sorted_images, sorted_labels)
 
     training_images = images[:3000]
     training_labels = labels[:3000]
@@ -83,3 +92,27 @@ def read_MNIST_data() -> Tuple[
         test_images,
         test_labels,
     )
+
+
+def shuffle_lists(a: List, b: List) -> Tuple[List, List]:
+    temp_list = list(zip(a, b))
+    random.shuffle(temp_list)
+    tuple_a, tuple_b = zip(*temp_list)
+    return list(tuple_a), list(tuple_b)
+
+
+def number_to_label_array(number: int) -> np.ndarray:
+    array = np.zeros(10)
+    array[number - 1] = 1
+
+    return array.reshape((10, 1))
+
+
+def split_data(
+    full_input_data: List[np.ndarray],
+    full_expected_output: List[np.ndarray],
+    batch_size: Optional[int],
+) -> Tuple[List[np.ndarray], List[np.ndarray]]:
+    input_data, expected_output = shuffle_lists(full_input_data, full_expected_output)
+
+    return input_data[:batch_size], expected_output[:batch_size]
