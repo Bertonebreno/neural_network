@@ -20,10 +20,16 @@ def backpropagation(
 
     error[num_of_layers - 1] += (
         activated_neurons[num_of_layers - 1] - expected_output
-    ) * d_sigmoid(neurons[num_of_layers - 1])
+    ) * d_sigmoid(neurons[num_of_layers - 1]) + regularization_constant * np.sum(
+        theta[num_of_layers - 1], axis=1
+    ).reshape(
+        error[num_of_layers - 1].shape
+    )
     for layer in range(num_of_layers - 2, 0, -1):
         error[layer] += np.dot(theta[layer + 1].T, error[layer + 1]) * d_sigmoid(
             neurons[layer]
+        ) + regularization_constant * np.sum(theta[layer], axis=1).reshape(
+            error[layer].shape
         )
 
     for layer in range(1, num_of_layers):
