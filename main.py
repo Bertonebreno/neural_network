@@ -1,6 +1,11 @@
+import os
+
 from config.log_config import logger as main_logger
 from methods.train_and_validate_model import train_and_validate_model
 from utils import NeuralNetwork, plot_theta, read_MNIST_data
+
+if not os.path.exists("my_folder"):
+    os.makedirs("my_folder")
 
 logger = main_logger.getChild(__name__)
 
@@ -9,7 +14,7 @@ possible_num_of_neurons = [
     [400, 25, 10],
     [400, 32, 32, 10],
 ]
-possible_regularization_constants = [0, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1, 3, 10.]
+possible_regularization_constants = [0, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1, 3, 10.0]
 
 (
     training_images,
