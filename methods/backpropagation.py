@@ -11,6 +11,7 @@ def backpropagation(
     neurons: List[np.ndarray],
     activated_neurons: List[np.ndarray],
     expected_output: List[np.ndarray],
+    regularization_constant: float = 0,
 ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
     num_of_layers = len(theta)
 

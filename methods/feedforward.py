@@ -21,28 +21,3 @@ def feedforward(
         activated_neurons[layer] = sigmoid(neurons[layer])
 
     return activated_neurons, neurons
-
-
-def generate_test_problem(num_of_examples: int) -> Tuple[List, List]:
-    input = np.array([np.random.random((2, 1)) for i in range(num_of_examples)])
-    expected_output = np.array([1 if row[0] > row[1] else 0 for row in input])
-
-    return input, expected_output
-
-
-def check_test_problem(
-    theta: List[np.ndarray], theta0: List[np.ndarray], number_of_tries: int
-) -> Tuple[int, int]:
-    trues = 0
-    falses = 0
-    for i in range(number_of_tries):
-        input, expected_output = generate_test_problem(1)
-
-        activated_neurons, _ = feedforward(theta, theta0, input[0])
-
-        answer = 1 if activated_neurons[-1] > 0.5 else 0
-        if answer == expected_output[0]:
-            trues += 1
-        else:
-            falses += 1
-    return trues, falses

@@ -3,10 +3,13 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 
+from config.log_config import logger as main_logger
 from methods.backpropagation import backpropagation
 from methods.feedforward import feedforward
 from methods.numerical_gradient import numerical_gradient
 from utils import cost, split_data
+
+logger = main_logger.getChild(__name__)
 
 
 def gradient_descendent(
@@ -17,10 +20,9 @@ def gradient_descendent(
     learning_rate: float,
     num_of_iterations: int,
     batch_size: Optional[int] = None,
+    regularization_constant: float = 0,
     calc_numeric: bool = False,
-) -> Tuple[
-    List[np.ndarray], List[np.ndarray], List[float]
-]:
+) -> Tuple[List[np.ndarray], List[np.ndarray], List[float]]:
     theta: List[np.ndarray] = deepcopy(initial_theta)
     theta0: List[np.ndarray] = deepcopy(initial_theta0)
 
@@ -34,19 +36,25 @@ def gradient_descendent(
         )
 
         if i % int(num_of_iterations / 10) == 0:
-            print(100 * "\n")
-            print(f"Progress: {i}/{num_of_iterations}")
+            logger.info(f" Progress: {i}/{num_of_iterations}")
 
         gradient, error = get_gradient_shaped_array(theta, theta0)
         numeric_gradient, numeric_error = get_gradient_shaped_array(theta, theta0)
 
-        total_cost = 0
+        total_cost: float = 0
         for input_row, expected_output_row in zip(input_data, expected_output):
             activated_neurons, neurons = feedforward(theta, theta0, input_row)
-            total_cost += cost(activated_neurons[-1], expected_output_row) / num_of_examples
+            total_cost += (
+                cost(activated_neurons[-1], expected_output_row) / num_of_examples
+            )
 
             gradient_row, error_row = backpropagation(
-                theta, theta0, neurons, activated_neurons, expected_output_row
+                theta,
+                theta0,
+                neurons,
+                activated_neurons,
+                expected_output_row,
+                regularization_constant=regularization_constant,
             )
             if calc_numeric:
                 numeric_gradient_row, numeric_error_row = numerical_gradient(
@@ -68,7 +76,6 @@ def gradient_descendent(
             theta0[layer] += learning_rate * error[layer]
 
         cost_history.append(total_cost)
-
 
     return theta, theta0, cost_history
 

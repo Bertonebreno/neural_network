@@ -1,9 +1,9 @@
+import random
 from typing import List, Optional, Tuple
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
-import random
 
 
 def generate_theta(
@@ -35,18 +35,25 @@ def cost(output: np.ndarray, expected_output: np.ndarray) -> float:
     return np.sum((output - expected_output) ** 2 / 2)
 
 
-def plot_theta(theta: List[np.ndarray], num_rows: int, num_cols: int) -> None:
-    fig, axes = plt.subplots(nrows=num_rows, ncols=num_cols, figsize=(num_cols*1.6, num_cols*0.9))
+def plot_theta(
+    theta: List[np.ndarray], num_rows: int, num_cols: int, description: str
+) -> None:
+    fig, axes = plt.subplots(
+        nrows=num_rows, ncols=num_cols, figsize=(num_cols * 1.6, num_cols * 0.9)
+    )
     image_number = 0
     for ax in axes.flat:
         theta_Li = theta[1][image_number]
-        im = ax.imshow(((theta_Li - np.min(theta_Li)) / np.ptp(theta_Li)).reshape((20, 20)), cmap="hot")
+        im = ax.imshow(
+            ((theta_Li - np.min(theta_Li)) / np.ptp(theta_Li)).reshape((20, 20)),
+            cmap="hot",
+        )
         image_number += 1
 
     fig.subplots_adjust(right=0.8)
     cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
     fig.colorbar(im, cax=cbar_ax)
-    plt.savefig("thetas.png", dpi=300)
+    plt.savefig(f"images/thetas {description}.png", dpi=300)
 
 
 def read_MNIST_data() -> Tuple[
@@ -113,3 +120,10 @@ def split_data(
     input_data, expected_output = shuffle_lists(full_input_data, full_expected_output)
 
     return input_data[:batch_size], expected_output[:batch_size]
+
+
+def generate_test_problem(num_of_examples: int) -> Tuple[List, List]:
+    input = [np.random.random((2, 1)) for i in range(num_of_examples)]
+    expected_output = [1 if row[0] > row[1] else 0 for row in input]
+
+    return input, expected_output
