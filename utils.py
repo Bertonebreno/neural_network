@@ -42,6 +42,8 @@ def cost(output: np.ndarray, expected_output: np.ndarray) -> float:
 def plot_theta(
     theta: List[np.ndarray], num_rows: int, num_cols: int, description: str
 ) -> None:
+    plt.clf()
+
     fig, axes = plt.subplots(
         nrows=num_rows, ncols=num_cols, figsize=(num_cols * 1.6, num_cols * 0.9)
     )

@@ -35,6 +35,7 @@ def train_and_validate_model(
     )
     training_time = time.time() - initial_time
 
+    plt.clf()
     plt.plot(cost_history)
     plt.savefig(f"images/cost_history {str(num_of_neurons)}.png", dpi=300)
 
